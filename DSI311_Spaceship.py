@@ -204,9 +204,6 @@ for num_col in numeric_cols:
 คือ เป็นคลาสยูทิลิตี้ที่ช่วยทำให้ป้ายกำกับเป็นมาตรฐาน โดยมีค่าระหว่าง 0 ถึง n_classes-1 เท่านั้น
 
 
-การทำ Mutual Information Score เพื่อวัดความสัมพันธ์ระหว่างฟีเจอร์ และค่าที่จะทำนาย เริ่มจากแปลงคอลัมน์ที่เป็น Categorical Data ด้วยวิธีการ Label Encoding และกำหนดให้ฟีเจอร์เหล่านี้ให้เป็น Discrete Features คือ ค่าที่ไม่ต่อเนื่อง
-"""
-
 from sklearn.preprocessing import OrdinalEncoder
 
 oc = OrdinalEncoder()
@@ -237,33 +234,14 @@ X = train_df.copy()
 X.drop("Transported", axis=1)
 y = X.pop('Transported')
 
-"""# Mutal Information Score
-สิ่งที่จะทำถัดไปทำคือ Mutual Information Score เพื่อวัดความสัมพันธ์ระหว่างฟีเจอร์และค่าที่จะทำนาย
-วัดค่า MI Score ด้วย mutual_info_classif ของ Scikit-Learn จะได้คะแนนว่าฟีเจอร์นั้นสัมพันธ์กับค่าที่จะทำนายมากน้อยแค่ไหน
-
-"""
 
 y=y.astype('int')
 
 y.head()
 
-for colname in X.select_dtypes("object"):
-    X[colname],_=[colname].factorize9()
-    X[colname] = X[colname].astype(int)
-
 discrete_features = X.dtypes == int
 
 discrete_features
-
-from sklearn.feature_selection import mutual_info_classif
-
-def make_mi_scores(X, y, discrete_fetures):
-    mi_scores = mutual_info_classif(X, y,discrete_features = discrete_features  )
-    mi_scores = pd.Series(mi_scores, name="MI Scores Clf", index=X.columns)
-    mi_scores = mi_scores.sort_values(ascending=False)
-
-mi_scores = make_mi_scores(X, y, discrete_features)
-mi_scores
 
 """Cat Boost"""
 """#CatBoost สร้าง Symmetric trees ไม่เหมือน XGBoost และ LightGBM ในทุกขั้นตอน ใบไม้จากต้นก่อนหน้าจะถูกแยกออกโดยใช้เงื่อนไขเดียวกัน มีการเลือกคู่คุณสมบัติ 
