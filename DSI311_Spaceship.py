@@ -238,7 +238,8 @@ X.drop("Transported", axis=1)
 y = X.pop('Transported')
 
 """# Mutal Information Score
-
+สิ่งที่จะทำถัดไปทำคือ Mutual Information Score เพื่อวัดความสัมพันธ์ระหว่างฟีเจอร์และค่าที่จะทำนาย
+วัดค่า MI Score ด้วย mutual_info_classif ของ Scikit-Learn จะได้คะแนนว่าฟีเจอร์นั้นสัมพันธ์กับค่าที่จะทำนายมากน้อยแค่ไหน
 
 """
 
@@ -265,6 +266,8 @@ mi_scores = make_mi_scores(X, y, discrete_features)
 mi_scores
 
 """Cat Boost"""
+"""#CatBoost สร้าง Symmetric trees ไม่เหมือน XGBoost และ LightGBM ในทุกขั้นตอน ใบไม้จากต้นก่อนหน้าจะถูกแยกออกโดยใช้เงื่อนไขเดียวกัน มีการเลือกคู่คุณสมบัติ 
+และใช้สำหรับโหนดของระดับทั้งหมด ช่วยในการใช้งาน CPU อย่างมีประสิทธิภาพ ลดเวลาในการคาดการณ์ ทำให้มีการใช้โมเดลที่รวดเร็ว และควบคุมการปรับให้เหมาะสมเป็นมาตรฐาน
 
 cat_features = list(range(0, X.shape[1]))
 print(cat_features)
@@ -273,9 +276,39 @@ from sklearn.model_selection import train_test_split
 
 X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=0)
 
+X_train.dtypes
+
+from catboost import CatBoostClassifier
+clf = CatBoostClassifier(
+    iterations=5, 
+    learning_rate=0.1, 
+)
+
+
+clf.fit(X_train, y_train, 
+        eval_set=(X_val, y_val), 
+        verbose=0
+)
+
+print('CatBoost model is fitted: ' + str(clf.is_fitted()))
+print('CatBoost model parameters:')
+print(clf.get_params())
+
+from catboost import CatBoostClassifier
+clf = CatBoostClassifier(
+    iterations=10,
+#     verbose=5,
+)
+
+clf.fit(
+    X_train, y_train,
+    eval_set=(X_val, y_val),
+)
+
+print(clf.predict(data=X_val))
+
 """# Submission"""
 
-test_df.info()
 
 pred=clf.predict(test_df)
 
